@@ -1,25 +1,20 @@
 'use client'
-import React from 'react';
-import { useFormik } from 'formik';
-import { signUpSchema } from '@/ValidationScheema/Validation';
-
-interface SignUpFormValues {
-    name:string;
+import { SignInScheema } from "@/ValidationScheema/Validation";
+import { useFormik } from "formik";
+import Link from "next/link";
+import React from "react";
+interface SignInFormValues {
   email: string;
   password: string;
-  Confirm_password: string;
 }
-
-const SignUp: React.FC = () => {
-  const formik = useFormik<SignUpFormValues>({
+const SignIn: React.FC = () => {
+  const formik = useFormik<SignInFormValues>({
     initialValues: {
-        name:'',
-      email: '',
-      password: '',
-      Confirm_password: '',
+      email: "",
+      password: "",
     },
-    validationSchema:signUpSchema,
-    
+    validationSchema: SignInScheema,
+
     onSubmit: (values) => {
       console.log(values);
       formik.resetForm();
@@ -38,12 +33,12 @@ const SignUp: React.FC = () => {
             src="https://www.shutterstock.com/image-vector/man-key-near-computer-account-260nw-1499141258.jpg"
             alt="logo"
           />
-          Sign Up
+          Sign In
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create an account
+              Sign a account
             </h1>
             <form
               onSubmit={(e) => {
@@ -52,23 +47,6 @@ const SignUp: React.FC = () => {
               }}
               className="space-y-4 md:space-y-6"
             >
-                         <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                                Full Name
-                                    </label>
-                <input
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.name}
-                  type="text"
-                  name="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  />
-                  <span className='font-medium text-red-600'>{formik.touched.name && formik.errors.name}</span>
-              </div>
               <div>
                 <label
                   htmlFor="email"
@@ -86,7 +64,9 @@ const SignUp: React.FC = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
                 />
-                   <span className='font-medium text-red-600'>{formik.touched.email && formik.errors.email}</span>
+                <span className="font-medium text-red-600">
+                  {formik.touched.email && formik.errors.email}
+                </span>
               </div>
               <div>
                 <label
@@ -105,42 +85,25 @@ const SignUp: React.FC = () => {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
-                   <span className='font-medium text-red-600'>{formik.touched.password && formik.errors.password}</span>
-              </div>
-              <div>
-                <label
-                  htmlFor="Confirm_password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.Confirm_password}
-                  type="password"
-                  name="Confirm_password"
-                  id="Confirm_password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
-                   <span className='font-medium text-red-600'>{formik.touched.Confirm_password && formik.errors.Confirm_password}</span>
+                <span className="font-medium text-red-600">
+                  {formik.touched.password && formik.errors.password}
+                </span>
               </div>
 
               <button
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Create an account
+                Login
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{' '}
-                <a
+                Password has been loss{" "}
+                <Link
                   href="#"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
-                  Login here
-                </a>
+                  Forget Password here
+                </Link>
               </p>
             </form>
           </div>
@@ -150,4 +113,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
