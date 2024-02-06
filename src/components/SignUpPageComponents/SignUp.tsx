@@ -1,33 +1,48 @@
-'use client'
-import React from 'react';
-import { useFormik } from 'formik';
-import { signUpSchema } from '@/ValidationScheema/Validation';
+"use client";
+import React from "react";
+import { useFormik } from "formik";
+import { signUpSchema } from "@/ValidationScheema/Validation";
+import { SignUpService } from "@/app/services/SignUpService";
+import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import Link from "next/link";
 
 interface SignUpFormValues {
-    name:string;
+  name: string;
   email: string;
   password: string;
   Confirm_password: string;
+  role: string;
 }
 
 const SignUp: React.FC = () => {
+  const router=useRouter()
   const formik = useFormik<SignUpFormValues>({
     initialValues: {
-        name:'',
-      email: '',
-      password: '',
-      Confirm_password: '',
+      name: "",
+      email: "",
+      password: "",
+      Confirm_password: "",
+      role: "Admin",
     },
-    validationSchema:signUpSchema,
-    
-    onSubmit: (values) => {
-      console.log(values);
+    validationSchema: signUpSchema,
+
+    onSubmit: async (values) => {
+      const  res:any= await SignUpService(values);
+      if(res.statusText==='OK' && res.status===200){
+        router.replace('SignIn')
+      }
+      if(res.response.status===409 && res.response.data.success===false){
+        toast.error(res.response.data.message)
+      }
+      
       formik.resetForm();
     },
   });
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <section className="bg-gray-50 dark:bg-gray-900 py-8 overflow-auto h-full">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -52,13 +67,13 @@ const SignUp: React.FC = () => {
               }}
               className="space-y-4 md:space-y-6"
             >
-                         <div>
+              <div>
                 <label
                   htmlFor="email"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                                Full Name
-                                    </label>
+                  Full Name
+                </label>
                 <input
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -66,8 +81,10 @@ const SignUp: React.FC = () => {
                   type="text"
                   name="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  />
-                  <span className='font-medium text-red-600'>{formik.touched.name && formik.errors.name}</span>
+                />
+                <span className="font-medium text-red-600">
+                  {formik.touched.name && formik.errors.name}
+                </span>
               </div>
               <div>
                 <label
@@ -86,7 +103,9 @@ const SignUp: React.FC = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
                 />
-                   <span className='font-medium text-red-600'>{formik.touched.email && formik.errors.email}</span>
+                <span className="font-medium text-red-600">
+                  {formik.touched.email && formik.errors.email}
+                </span>
               </div>
               <div>
                 <label
@@ -105,7 +124,9 @@ const SignUp: React.FC = () => {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
-                   <span className='font-medium text-red-600'>{formik.touched.password && formik.errors.password}</span>
+                <span className="font-medium text-red-600">
+                  {formik.touched.password && formik.errors.password}
+                </span>
               </div>
               <div>
                 <label
@@ -124,9 +145,11 @@ const SignUp: React.FC = () => {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
-                   <span className='font-medium text-red-600'>{formik.touched.Confirm_password && formik.errors.Confirm_password}</span>
+                <span className="font-medium text-red-600">
+                  {formik.touched.Confirm_password &&
+                    formik.errors.Confirm_password}
+                </span>
               </div>
-
               <button
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -134,18 +157,19 @@ const SignUp: React.FC = () => {
                 Create an account
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{' '}
-                <a
-                  href="#"
+                Already have an account?{" "}
+                <Link
+                  href="/SignIn"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
                   Login here
-                </a>
+                </Link>
               </p>
             </form>
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </section>
   );
 };

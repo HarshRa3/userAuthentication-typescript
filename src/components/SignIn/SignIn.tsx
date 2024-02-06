@@ -1,13 +1,18 @@
 'use client'
 import { SignInScheema } from "@/ValidationScheema/Validation";
+import { SignInService } from "@/app/services/SignInServices";
 import { useFormik } from "formik";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 interface SignInFormValues {
   email: string;
   password: string;
 }
 const SignIn: React.FC = () => {
+  const router=useRouter()
   const formik = useFormik<SignInFormValues>({
     initialValues: {
       email: "",
@@ -15,14 +20,25 @@ const SignIn: React.FC = () => {
     },
     validationSchema: SignInScheema,
 
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const res:any= await SignInService(values)
+      console.log(res);
+      const token=res.data?res.data.data.token:''
+      const responseError=res.response?res.response:''
+      if(res.statusText==='OK' && res.status===200 && token){
+        router.replace('/dashboard')
+      }
+      if(responseError.status===401 && responseError.data.success===false ){
+        toast.error(responseError.data.message)
+      }
+     
       formik.resetForm();
+     
     },
   });
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <section className="bg-gray-50 dark:bg-gray-900 overflow-auto h-full ">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -96,19 +112,26 @@ const SignIn: React.FC = () => {
               >
                 Login
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Password has been loss{" "}
+              <div className="text-sm font-light text-gray-500 dark:text-gray-400 flex justify-between">
+
                 <Link
                   href="#"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                  Forget Password here
+                  >
+                  Forget Password
                 </Link>
-              </p>
+                <Link
+                  href="/SignUp"
+                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                  >
+                  Create New Account
+                </Link>
+                  </div>
             </form>
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </section>
   );
 };
