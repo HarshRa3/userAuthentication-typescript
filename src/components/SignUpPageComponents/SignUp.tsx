@@ -2,11 +2,11 @@
 import React from "react";
 import { useFormik } from "formik";
 import { signUpSchema } from "@/ValidationScheema/Validation";
-import { SignUpService } from "@/app/services/SignUpService";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Link from "next/link";
+import { ApiFetching } from "@/app/services/ApiFetching";
 
 interface SignUpFormValues {
   name: string;
@@ -29,14 +29,22 @@ const SignUp: React.FC = () => {
     validationSchema: signUpSchema,
 
     onSubmit: async (values) => {
-      const  res:any= await SignUpService(values);
-      if(res.statusText==='OK' && res.status===200){
-        router.replace('SignIn')
+      try {
+        const  res:any= await ApiFetching('POST','api/users',values);
+        if(res.statusText==='OK' && res.status===200){
+          router.replace('/')
+        }
+        if(res.response.status===409 && res.response.data.success===false){
+          toast.error(res.response.data.message)
+        }
+        if(res.response.status===402 && res.response.data.success===false){
+          toast.error(res.response?.data.message)
+        }
+        
+      } catch (error) {
+        console.log('error is',error);  
       }
-      if(res.response.status===409 && res.response.data.success===false){
-        toast.error(res.response.data.message)
-      }
-      
+ 
       formik.resetForm();
     },
   });
@@ -159,7 +167,7 @@ const SignUp: React.FC = () => {
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link
-                  href="/SignIn"
+                  href="/"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
                   Login here

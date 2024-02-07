@@ -1,6 +1,6 @@
 'use client'
 import { SignInScheema } from "@/ValidationScheema/Validation";
-import { SignInService } from "@/app/services/SignInServices";
+import { ApiFetching } from "@/app/services/ApiFetching";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,15 +21,23 @@ const SignIn: React.FC = () => {
     validationSchema: SignInScheema,
 
     onSubmit: async (values) => {
-      const res:any= await SignInService(values)
-      console.log(res);
-      const token=res.data?res.data.data.token:''
+      try {
+        const res:any= await ApiFetching('POST','api/signIn',values)
+      const token=res.data?.data.token
       const responseError=res.response?res.response:''
       if(res.statusText==='OK' && res.status===200 && token){
         router.replace('/dashboard')
       }
       if(responseError.status===401 && responseError.data.success===false ){
         toast.error(responseError.data.message)
+      }
+     
+      if(responseError.status===402 && responseError.data.success===false ){
+        toast.error(responseError.data.message)
+      } 
+      } catch (error) {
+       console.log(error);
+        
       }
      
       formik.resetForm();
