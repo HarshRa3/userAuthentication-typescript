@@ -1,7 +1,9 @@
 'use client'
 import React from 'react';
 import { useFormik } from 'formik';
-
+import { ApiFetching } from '@/app/services/ApiFetching';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const AddUserForm = () => {
   const formik = useFormik({
     initialValues: {
@@ -10,10 +12,23 @@ const AddUserForm = () => {
       course: 'Mern Stack', 
       dateOfBirth: '',
       description: '',
+      userId:'65c30eebf3a2f0f087b5afa3',
       file: null,
     },
-    onSubmit: (values) => {
-      console.log(values.file);
+    onSubmit: async (values) => {
+      try {
+        const registeredUserForCourse:any=await ApiFetching("POST",'../api/registeredUserForCourse',values)
+        if(registeredUserForCourse.response?.status===409 && registeredUserForCourse.response?.data.success===false){
+          toast.error(registeredUserForCourse.response?.data.message)
+        }
+        console.log(registeredUserForCourse);
+        if(registeredUserForCourse.statusText==="OK"){
+          toast.success(registeredUserForCourse.data.message)
+        }
+      } catch (error) {
+        toast.error('Somthing went wrong')
+      }
+      formik.resetForm()
     },
   });
 
@@ -24,7 +39,7 @@ const AddUserForm = () => {
           Add User
         </h1>
         <form onSubmit={formik.handleSubmit}>
-          <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 items-baseline">
             <div>
               <label className="text-white dark:text-gray-200" htmlFor="username">
                 Username
@@ -153,6 +168,7 @@ const AddUserForm = () => {
           </div>
         </form>
       </section>
+      <ToastContainer/>
     </>
   );
 };

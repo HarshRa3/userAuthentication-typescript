@@ -33,7 +33,7 @@ export const POST = async (request: NextRequest) => {
     const newUser = await User.create({ name, email, password:hashSync(password, salt), role });
     return ResponseMessages(
       "User Register has been succesfully",
-      newUser,
+      null,
       true,
       200
     );

@@ -1,10 +1,11 @@
 'use client'
 import { SignInScheema } from "@/ValidationScheema/Validation";
 import { ApiFetching } from "@/app/services/ApiFetching";
+import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 interface SignInFormValues {
@@ -12,6 +13,7 @@ interface SignInFormValues {
   password: string;
 }
 const SignIn: React.FC = () => {
+  const [loading, setloading] = useState(false)
   const router=useRouter()
   const formik = useFormik<SignInFormValues>({
     initialValues: {
@@ -22,25 +24,32 @@ const SignIn: React.FC = () => {
 
     onSubmit: async (values) => {
       try {
+        setloading(true)
         const res:any= await ApiFetching('POST','api/signIn',values)
       const token=res.data?.data.token
       const responseError=res.response?res.response:''
-      if(res.statusText==='OK' && res.status===200 && token){
-        router.replace('/dashboard')
-      }
+      
       if(responseError.status===401 && responseError.data.success===false ){
-        toast.error(responseError.data.message)
+        toast.error(responseError.data.message,{autoClose:2000})
       }
      
       if(responseError.status===402 && responseError.data.success===false ){
-        toast.error(responseError.data.message)
-      } 
+        toast.error(responseError.data.message,{autoClose:2000})
+      }
+      if(res.statusText==='OK' && res.status===200 && token){
+        toast.success(res.data.message,{autoClose:2000});
+
+        router.replace('/dashboard')
+      }
       } catch (error) {
        console.log(error);
         
+      }finally{
+        setloading(false)
       }
      
       formik.resetForm();
+      
      
     },
   });
@@ -118,7 +127,7 @@ const SignIn: React.FC = () => {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Login
+              {loading?<CircularProgress sx={{color:'inherit'}} />:'Login'}  
               </button>
               <div className="text-sm font-light text-gray-500 dark:text-gray-400 flex justify-between">
 

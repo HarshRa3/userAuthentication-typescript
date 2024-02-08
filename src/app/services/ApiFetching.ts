@@ -2,6 +2,7 @@ import { instance } from "@/helper/Instance";
 
 export const ApiFetching= async (method:string,api:string,data:any)=>{
     try {
+
         let response;
         switch (method) {
             case 'GET':

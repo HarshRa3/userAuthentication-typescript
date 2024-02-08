@@ -20,6 +20,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -107,7 +108,6 @@ interface CustomJwtPayload extends JwtPayload {
 }
 export default function Navbar({ pages, token }: pages) {
   const tokenDa: CustomJwtPayload = jwtDecode(token);
-  console.log(tokenDa, "fdsadsfd");
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -168,7 +168,8 @@ export default function Navbar({ pages, token }: pages) {
               {
                 text: "Users Data",
                 icon: <FaUsers size={"1.5rem"} />,
-                link: `/dashboard/${tokenDa.iat}UserData`,
+                link: `/dashboard/userData`,
+                sdata:tokenDa
               },
               {
                 text: "Admins Data",
@@ -177,7 +178,7 @@ export default function Navbar({ pages, token }: pages) {
               },
             ].map((item, index) => (
               <Link
-                href={item.link}
+                href={{pathname:item.link}}
                 key={index}
                 style={{ textDecoration: "none", color: "white" }}
               >
@@ -192,18 +193,18 @@ export default function Navbar({ pages, token }: pages) {
           </List>
         </Box>
       </Drawer>
-      <Box
+      <Stack
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          minWidth:'10%',
           bgcolor: "#130f40d1",
-          minHeight: { xs: 0, lg: "100vh" },
+          height: "100vh" ,
         }}
       >
         <DrawerHeader />
         {pages}
-      </Box>
+      </Stack>
     </Box>
   );
 }
