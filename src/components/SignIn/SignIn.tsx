@@ -1,56 +1,61 @@
-"use client";
-import React from "react";
+'use client'
+import { SignInScheema } from "@/ValidationScheema/Validation";
+import { ApiFetching } from "@/app/services/ApiFetching";
+import { CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
-import { signUpSchema } from "@/ValidationScheema/Validation";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import Link from "next/link";
-import { ApiFetching } from "@/app/services/ApiFetching";
-
-interface SignUpFormValues {
-  name: string;
+interface SignInFormValues {
   email: string;
   password: string;
-  Confirm_password: string;
-  role: string;
 }
-
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
+  const [loading, setloading] = useState(false)
   const router=useRouter()
-  const formik = useFormik<SignUpFormValues>({
+  const formik = useFormik<SignInFormValues>({
     initialValues: {
-      name: "",
       email: "",
       password: "",
-      Confirm_password: "",
-      role: "Admin",
     },
-    validationSchema: signUpSchema,
+    validationSchema: SignInScheema,
 
     onSubmit: async (values) => {
       try {
-        const  res:any= await ApiFetching('POST','api/users',values);
-        if(res.statusText==='OK' && res.status===200){
-          router.replace('/')
-        }
-        if(res.response.status===409 && res.response.data.success===false){
-          toast.error(res.response.data.message)
-        }
-        if(res.response.status===402 && res.response.data.success===false){
-          toast.error(res.response?.data.message)
-        }
-        
-      } catch (error) {
-        console.log('error is',error);  
+        setloading(true)
+        const res:any= await ApiFetching('POST','api/signIn',values)
+      const token=res.data?.data.token
+      const responseError=res.response?res.response:''
+      
+      if(responseError.status===401 && responseError.data.success===false ){
+        toast.error(responseError.data.message,{autoClose:2000})
       }
- 
+     
+      if(responseError.status===402 && responseError.data.success===false ){
+        toast.error(responseError.data.message,{autoClose:2000})
+      }
+      if(res.statusText==='OK' && res.status===200 && token){
+        toast.success(res.data.message,{autoClose:2000});
+
+        router.replace('/dashboard')
+      }
+      } catch (error) {
+       console.log(error);
+        
+      }finally{
+        setloading(false)
+      }
+     
       formik.resetForm();
+      
+     
     },
   });
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 py-8 overflow-auto h-full">
+    <section className="bg-gray-50 dark:bg-gray-900 overflow-auto h-full ">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -61,12 +66,12 @@ const SignUp: React.FC = () => {
             src="https://www.shutterstock.com/image-vector/man-key-near-computer-account-260nw-1499141258.jpg"
             alt="logo"
           />
-          Sign Up
+          Sign In
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create an account
+              Sign a account
             </h1>
             <form
               onSubmit={(e) => {
@@ -75,25 +80,6 @@ const SignUp: React.FC = () => {
               }}
               className="space-y-4 md:space-y-6"
             >
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Full Name
-                </label>
-                <input
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.name}
-                  type="text"
-                  name="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
-                <span className="font-medium text-red-600">
-                  {formik.touched.name && formik.errors.name}
-                </span>
-              </div>
               <div>
                 <label
                   htmlFor="email"
@@ -136,43 +122,28 @@ const SignUp: React.FC = () => {
                   {formik.touched.password && formik.errors.password}
                 </span>
               </div>
-              <div>
-                <label
-                  htmlFor="Confirm_password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.Confirm_password}
-                  type="password"
-                  name="Confirm_password"
-                  id="Confirm_password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
-                <span className="font-medium text-red-600">
-                  {formik.touched.Confirm_password &&
-                    formik.errors.Confirm_password}
-                </span>
-              </div>
+
               <button
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Create an account
+              {loading?<CircularProgress sx={{color:'inherit'}} />:'Login'}  
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{" "}
+              <div className="text-sm font-light text-gray-500 dark:text-gray-400 flex justify-between">
+
                 <Link
-                  href="/"
+                  href="#"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                  Login here
+                  >
+                  Forget Password
                 </Link>
-              </p>
+                <Link
+                  href="/SignUp"
+                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                  >
+                  Create New Account
+                </Link>
+                  </div>
             </form>
           </div>
         </div>
@@ -182,4 +153,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
