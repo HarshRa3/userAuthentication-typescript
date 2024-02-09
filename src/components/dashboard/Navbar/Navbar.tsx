@@ -200,6 +200,7 @@ export default function Navbar({ pages, token }: pages) {
           minWidth:'10%',
           bgcolor: "#130f40d1",
           height: "100vh" ,
+          p:3
         }}
       >
         <DrawerHeader />

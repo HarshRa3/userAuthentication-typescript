@@ -4,9 +4,10 @@ import { registeredUserForCourse } from "@/models/users";
 import { NextRequest } from "next/server";
 connectdb();
 export const GET = async (request: NextRequest, { params }: any) => {
-  const { taskId } = params;
+  const {registeredUserForCourseId} = params;
+  
   try {
-    const singleTask = await registeredUserForCourse.findById(taskId);
+    const singleTask = await registeredUserForCourse.findById(registeredUserForCourseId);
     return ResponseMessages(
       `Getting single data is succesfully `,
       singleTask,
@@ -18,12 +19,21 @@ export const GET = async (request: NextRequest, { params }: any) => {
   }
 };
 export const PUT = async (request: NextRequest, { params }: any) => {
-  const { taskId } = params;
-  const { title, content, status } = await request.json();
+  const { registeredUserForCourseId } = params;
+  const { username, email, course } = await request.json();
   try {
+    const user = await registeredUserForCourse.findOne({ email: email });
+    if(user){
+      return ResponseMessages(
+        "Email already exist",
+        null,
+        false,
+        409
+      );
+    }
     const UpdatedData = await registeredUserForCourse.findByIdAndUpdate(
-      taskId,
-      { title, content, status },
+      registeredUserForCourseId,
+      { username, email, course },
       { new: true }
     );
     return ResponseMessages(
@@ -37,9 +47,9 @@ export const PUT = async (request: NextRequest, { params }: any) => {
   }
 };
 export const DELETE = async (request: NextRequest, { params }: any) => {
-  const { userId } = params;
+  const { registeredUserForCourseId } = params;
   try {
-    await registeredUserForCourse.deleteOne({ _id: userId });
+    await registeredUserForCourse.deleteOne({ _id: registeredUserForCourseId });
     return ResponseMessages("Task Has been deleted", null, true, 200);
   } catch (error) {
     return ResponseMessages(`Error message is ${error} `, null, false, 500);
