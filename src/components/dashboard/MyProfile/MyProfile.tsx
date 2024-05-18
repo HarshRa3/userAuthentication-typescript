@@ -13,7 +13,7 @@ interface CustomJwtPayload extends JwtPayload {
 
 const MyProfile: React.FC<{ token: TokenProps }> = ({ token }) => {
   const decode:CustomJwtPayload = jwtDecode(token.value);
-  console.log(token);
+ 
 
   return (
     <Stack sx={{ color: "#f0f0f0c2" }}>

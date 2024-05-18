@@ -1,9 +1,9 @@
 import AddUserForm from '@/components/dashboard/AddUser/AddUserForm'
 import React from 'react'
 
-const page = () => {
+const page = ({params}:any) => {
   return (
-<AddUserForm/>
+<AddUserForm userId={params.addUser}/>
   )
 }
 

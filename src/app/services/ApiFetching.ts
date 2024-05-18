@@ -19,8 +19,7 @@ export const ApiFetching= async (method:string,api:string,data:any)=>{
                 break;
             default:
                 throw new Error('Unsupported HTTP method');
-                
-        }
+            }
 
         return response;
     } catch (error) {

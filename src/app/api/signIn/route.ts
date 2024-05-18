@@ -22,13 +22,13 @@ export const POST=async (request:NextRequest)=>{
       }
     
     //4. check password length
-    if(password.length <8 )
+    if(password.length<8 )
     {
         return ResponseMessages(`Password must contain at least 8 characters`,null,false,400)
     }
     const user=await User.findOne({email})
     if(!user){
-        return  ResponseMessages("User not found!",null,false,401)
+        return ResponseMessages("User not found!",null,false,401)
     }
     const bcryptPassword=compareSync(password,user.password)
     if(!bcryptPassword){

@@ -56,7 +56,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -108,6 +107,7 @@ interface CustomJwtPayload extends JwtPayload {
 }
 export default function Navbar({ pages, token }: pages) {
   const tokenDa: CustomJwtPayload = jwtDecode(token);
+
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -163,18 +163,19 @@ export default function Navbar({ pages, token }: pages) {
               {
                 text: "Add Users",
                 icon: <RiUserAddFill size={"1.5rem"} />,
-                link: `/dashboard/addUser`,
+                link: `/dashboard/${tokenDa.id}/addUser`,
               },
               {
                 text: "Users Data",
                 icon: <FaUsers size={"1.5rem"} />,
-                link: `/dashboard/userData`,
-                sdata:tokenDa
+                link: `/dashboard/${tokenDa.id}/userData`,
+                // sdata:tokenDa
               },
               {
                 text: "Admins Data",
                 icon: <RiAdminFill size={"1.5rem"} />,
-                link: "/dashboard/admindata",
+                link: "/",
+                // handleClick:handleClick
               },
             ].map((item, index) => (
               <Link
@@ -200,6 +201,7 @@ export default function Navbar({ pages, token }: pages) {
           minWidth:'10%',
           bgcolor: "#130f40d1",
           height: "100vh" ,
+          overflow:"auto",
           p:3
         }}
       >

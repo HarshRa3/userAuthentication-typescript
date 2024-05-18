@@ -28,7 +28,7 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-
+  
 });
 
 export const registeredUserForCourse =

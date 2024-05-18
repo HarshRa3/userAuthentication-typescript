@@ -4,20 +4,20 @@ import { useFormik } from 'formik';
 import { ApiFetching } from '@/app/services/ApiFetching';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const AddUserForm = () => {
+const AddUserForm = ({userId}:any) => {
   const formik = useFormik({
     initialValues: {
       username: '',
       email: '',
       course: 'Mern Stack', 
-      dateOfBirth: '',
+      dateOfBirth: '02/02/2002',
       description: '',
-      userId:'65c30eebf3a2f0f087b5afa3',
+      userId:userId,
       file: null,
     },
     onSubmit: async (values) => {
       try {
-        const registeredUserForCourse:any=await ApiFetching("POST",'../api/registeredUserForCourse',values)
+        const registeredUserForCourse:any=await ApiFetching("POST",'../../api/registeredUserForCourse',values)
         if(registeredUserForCourse.response?.status===409 && registeredUserForCourse.response?.data.success===false){
           toast.error(registeredUserForCourse.response?.data.message)
         }
@@ -96,6 +96,7 @@ const AddUserForm = () => {
                 type="date"
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 value={formik.values.dateOfBirth}
+                // value={new Date('01/12/2002')}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 
@@ -150,7 +151,6 @@ const AddUserForm = () => {
                         />
                         
                     </label>
-                    {/* <img src={formik.values.file} alt="dhjshd" /> */}
                     <p className="pl-1 text-white">or drag and drop</p>
                   </div>
                   <p className="text-xs text-white">PNG, JPG, GIF up to 10MB</p>

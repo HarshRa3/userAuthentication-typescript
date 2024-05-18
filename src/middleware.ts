@@ -5,7 +5,6 @@ export function middleware(request: any) {
   const url = request.nextUrl.clone();
   const token = cookies();
   const islogin = token.get("token");
-
   if (!islogin) {
     if (request.nextUrl.pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/", request.url));
@@ -36,7 +35,6 @@ export function middleware(request: any) {
       }else if (url.pathname === "/dashboard") {
         return NextResponse.redirect(new URL("/user-dashboard", request.url));
       }
-    }
-  
+    } 
   }
 }
